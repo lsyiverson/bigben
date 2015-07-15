@@ -1,10 +1,17 @@
 package com.lsyiverson.bigben.service;
 
+import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
+
+import com.lsyiverson.bigben.BigBenApplication;
+import com.lsyiverson.bigben.R;
+import com.lsyiverson.bigben.model.BeaconInfo;
 
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
@@ -14,6 +21,10 @@ import org.altbeacon.beacon.MonitorNotifier;
 import org.altbeacon.beacon.Region;
 
 import java.util.UUID;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 public class BeaconService extends Service implements BeaconConsumer {
     public static final String TAG = BeaconService.class.getSimpleName();
@@ -48,7 +59,19 @@ public class BeaconService extends Service implements BeaconConsumer {
         beaconManager.setMonitorNotifier(new MonitorNotifier() {
             @Override
             public void didEnterRegion(Region region) {
+                UUID uuid = region.getId1().toUuid();
                 Log.e(TAG, "uuid of region:" + region);
+                BigBenApplication.getInstance().getRestClient().getBeaconDataService().getBeaconInfo(uuid.toString(), new Callback<BeaconInfo>() {
+                    @Override
+                    public void success(BeaconInfo beaconInfo, Response response) {
+                        sendNotification(beaconInfo);
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        Log.e(TAG, error.toString());
+                    }
+                });
             }
 
             @Override
@@ -72,5 +95,15 @@ public class BeaconService extends Service implements BeaconConsumer {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+    }
+
+    private void sendNotification(BeaconInfo beaconInfo) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+        builder.setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle(getString(R.string.app_name))
+                .setContentText(beaconInfo.getTitle());
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(0, builder.build());
     }
 }

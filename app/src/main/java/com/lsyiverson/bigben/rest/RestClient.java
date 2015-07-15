@@ -26,4 +26,8 @@ public class RestClient {
 
         beaconDataService = beaconDataRestAdapter.create(DataService.class);
     }
+
+    public DataService getBeaconDataService() {
+        return beaconDataService;
+    }
 }

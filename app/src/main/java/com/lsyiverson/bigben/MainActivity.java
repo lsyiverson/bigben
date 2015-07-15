@@ -4,8 +4,10 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.lsyiverson.bigben.service.BeaconService;
 
@@ -34,6 +36,9 @@ public class MainActivity extends BaseActivity {
         } else {
             serviceButton.setText(R.string.start_service);
         }
+        if (!"127.0.0.1".equals(BigBenApplication.getInstance().getHostIp())) {
+            hostIp.setText(BigBenApplication.getInstance().getHostIp());
+        }
     }
 
     @OnClick(R.id.service_button)
@@ -42,8 +47,13 @@ public class MainActivity extends BaseActivity {
             stopService(new Intent(this, BeaconService.class));
             serviceButton.setText(R.string.start_service);
         } else {
-            startService(new Intent(this, BeaconService.class));
-            serviceButton.setText(R.string.stop_service);
+            if (TextUtils.isEmpty(hostIp.getText())) {
+                Toast.makeText(this, R.string.host_empty_tips, Toast.LENGTH_SHORT).show();
+            } else {
+                BigBenApplication.getInstance().setHostIp(hostIp.getText().toString());
+                startService(new Intent(this, BeaconService.class));
+                serviceButton.setText(R.string.stop_service);
+            }
         }
     }
 
