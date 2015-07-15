@@ -1,6 +1,7 @@
 package com.lsyiverson.bigben.service;
 
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +13,8 @@ import android.util.Log;
 import com.lsyiverson.bigben.BigBenApplication;
 import com.lsyiverson.bigben.R;
 import com.lsyiverson.bigben.model.BeaconInfo;
+import com.lsyiverson.bigben.ui.AdContentActivity;
+import com.lsyiverson.bigben.utils.Constants;
 
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
@@ -98,10 +101,18 @@ public class BeaconService extends Service implements BeaconConsumer {
     }
 
     private void sendNotification(BeaconInfo beaconInfo) {
+        Intent adIntent = new Intent(this, AdContentActivity.class);
+        adIntent.putExtra(Constants.BEACON_INFO, beaconInfo);
+        adIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
         builder.setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(getString(R.string.app_name))
-                .setContentText(beaconInfo.getTitle());
+                .setContentText(beaconInfo.getTitle())
+                .setAutoCancel(true)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                .setContentIntent(PendingIntent.getActivity(this, 0, adIntent, PendingIntent.FLAG_UPDATE_CURRENT));
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(0, builder.build());
