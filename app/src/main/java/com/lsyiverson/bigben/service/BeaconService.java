@@ -61,13 +61,13 @@ public class BeaconService extends Service implements BeaconConsumer {
     public void onBeaconServiceConnect() {
         beaconManager.setMonitorNotifier(new MonitorNotifier() {
             @Override
-            public void didEnterRegion(Region region) {
+            public void didEnterRegion(final Region region) {
                 UUID uuid = region.getId1().toUuid();
                 Log.e(TAG, "uuid of region:" + region);
                 BigBenApplication.getInstance().getRestClient().getBeaconDataService().getBeaconInfo(uuid.toString(), new Callback<BeaconInfo>() {
                     @Override
                     public void success(BeaconInfo beaconInfo, Response response) {
-                        sendNotification(beaconInfo);
+                        sendNotification(region.getId2().toInt(), beaconInfo);
                     }
 
                     @Override
@@ -91,16 +91,14 @@ public class BeaconService extends Service implements BeaconConsumer {
         try {
             Identifier id1 = Identifier.fromUuid(UUID.fromString(FILTER_UUID_1));
             Identifier id2 = Identifier.fromUuid(UUID.fromString(FILTER_UUID_2));
-            Log.d(TAG, id1.toUuid().toString());
-            Log.d(TAG, id2.toUuid().toString());
-            beaconManager.startMonitoringBeaconsInRegion(new Region("beacon1", id1, null, null));
-            beaconManager.startMonitoringBeaconsInRegion(new Region("beacon2", id2, null, null));
+            beaconManager.startMonitoringBeaconsInRegion(new Region("beacon1", id1, Identifier.fromInt(1), null));
+            beaconManager.startMonitoringBeaconsInRegion(new Region("beacon2", id2, Identifier.fromInt(2), null));
         } catch (RemoteException e) {
             e.printStackTrace();
         }
     }
 
-    private void sendNotification(BeaconInfo beaconInfo) {
+    private void sendNotification(int id, BeaconInfo beaconInfo) {
         Intent adIntent = new Intent(this, AdContentActivity.class);
         adIntent.putExtra(Constants.BEACON_INFO, beaconInfo);
         adIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -112,9 +110,9 @@ public class BeaconService extends Service implements BeaconConsumer {
                 .setContentText(beaconInfo.getTitle())
                 .setAutoCancel(true)
                 .setDefaults(NotificationCompat.DEFAULT_ALL)
-                .setContentIntent(PendingIntent.getActivity(this, 0, adIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+                .setContentIntent(PendingIntent.getActivity(this, id, adIntent, PendingIntent.FLAG_UPDATE_CURRENT));
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(0, builder.build());
+        notificationManager.notify(id, builder.build());
     }
 }
