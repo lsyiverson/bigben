@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:layout_height="match_parent">
+    <ImageView
+        android:id="@+id/ad_image"
+        android:adjustViewBounds="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/ad_title"
+        android:layout_marginTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="入住成都度假酒店，探索市中心的独特魅力"/>
+    <TextView
+        android:id="@+id/ad_content"
+        android:layout_marginTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="成都富力丽思卡尔顿酒店风格时尚简约，设计灵感源于成都两千多年的厚>重历史文化，古典美和现代感在细节间自然展现。度假酒店将成都独特的茶文化融入客人体验当中，从您抵达开始，游走于餐厅、水疗或是舒适的客房内，您皆可体会现代摩登方式演绎的独一无二的个性化体验。"/>
+</LinearLayout>
