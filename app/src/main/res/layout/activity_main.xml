@@ -11,6 +11,7 @@
         android:id="@+id/host_ip"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:inputType="textWebEmailAddress"
         android:hint="127.0.0.1"/>
 
     <Button
